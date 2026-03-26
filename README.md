@@ -1,12 +1,28 @@
 # feishu-channel
 
-> 让 Claude Code 通过飞书与你双向沟通的 MCP Server。在飞书给 Claude 发指令，Claude 的回复直接发回飞书。
+> 让 Claude Code 通过飞书与你双向沟通的 MCP Server。在飞书给 Claude 发消息，Claude 的回复直接发回飞书。
 
-## 效果
+## 能做什么
 
-- 📲 在飞书给 Claude 发消息，Claude 自动回复到飞书
-- 🔁 Claude Code 每分钟自动轮询一次飞书消息（通过 `/loop` 技能）
-- 🔐 配对验证机制，只有通过配对的用户才能与 Claude 通信
+- 📲 **飞书发消息，Claude 自动回复到飞书** — 发简单指令、查状态、临时通知等
+- 🔁 **每分钟自动轮询** — 无需手动触发，Claude Code 通过 `/loop` 技能定时检查
+- 🔐 **配对验证机制** — 只有通过配对的飞书账号才能与 Claude 通信
+
+## 适用场景与限制
+
+**适合通过飞书操作的场景：**
+- 离开电脑时发简单指令（查询、通知、触发单次任务）
+- 告知 Claude 需求，让其在后台执行并把结果发回飞书
+
+**不适合的场景：**
+- 需要多轮交互的复杂开发任务（飞书来回延迟高，终端更高效）
+- 需要查看代码输出、文件内容等长文本（飞书消息有长度限制）
+- 需要实时审批工具权限（权限确认只能在终端操作，不支持飞书审批）
+
+**重要限制：**
+- 消息最多延迟 1 分钟（轮询间隔）
+- Claude 的回复仅发送到飞书，**终端不显示**
+- 服务运行在**本地**，Claude Code 必须保持运行状态才能收发消息
 
 ## 系统要求
 
@@ -61,8 +77,8 @@
 ## 第二步：安装本项目
 
 ```bash
-git clone https://github.com/your-username/feishu-channel.git
-cd feishu-channel
+git clone https://github.com/tudoubudou/claudecode-feishu-channel.git
+cd claudecode-feishu-channel
 npm install
 ```
 
@@ -234,6 +250,18 @@ Claude 处理消息，调用 reply 工具
 **Q: 和 Claude Code 官方 Channels 功能有什么区别**
 
 官方 Channels 功能需要 claude.ai 账号登录，且不兼容 `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` 设置。本项目使用队列轮询方案，兼容所有认证方式，但消息实时性略低（最多 1 分钟延迟）。
+
+**Q: 服务部署在哪里？需要服务器吗？**
+
+本项目**完全运行在本地**，不需要任何云服务器或公网地址。
+
+服务运行细节：
+- MCP Server 作为 Claude Code 的子进程启动，随 Claude Code 启动而启动、退出而退出
+- 飞书消息通过**长连接（WebSocket）**从飞书服务器推送到本机，无需公网地址
+- 所有数据（配对信息、消息队列）存储在本地 `~/.claude/channels/feishu/` 目录
+- **Claude Code 必须保持运行**，关闭后将无法收发飞书消息
+
+如果希望后台持续运行，可以在 `tmux` 或 `screen` 中启动 Claude Code，并开启 `/loop` 轮询。
 
 ---
 
