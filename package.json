@@ -1,0 +1,19 @@
+{
+  "name": "feishu-channel",
+  "version": "1.0.0",
+  "description": "Feishu channel server for Claude Code",
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx/esm src/index.ts",
+    "dev": "node --import tsx/esm --watch src/index.ts"
+  },
+  "dependencies": {
+    "@larksuiteoapi/node-sdk": "^1.22.0",
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
